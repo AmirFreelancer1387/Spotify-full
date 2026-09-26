@@ -1,3 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+import express from 'express';
+const app = express();
+const PORT = 500;
+app.listen(PORT, () => {
+    console.log('is runing', PORT);
+});
 //# sourceMappingURL=index.js.map
