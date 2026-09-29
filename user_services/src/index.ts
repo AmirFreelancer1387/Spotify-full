@@ -1,25 +1,16 @@
 import express from 'express'
-import dotenv from 'dotenv'
-import mongoose from 'mongoose';
 import userRoute from './routes.js'
+import connectDB from './config/db.js';
 
-dotenv.config()
+
 
 const app = express()
 
 
+
+
 app.use(express.json())
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGOOSE_URL as string, {
-            dbName: "spotifyDB",
-        });
-        console.log('DB is connected')
-    } catch (error) {
-        console.log(error)
-    }
-}
 
 
 app.get('/',(req,res)=>{
@@ -34,6 +25,7 @@ const StartServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
         console.log('server is runing', PORT)
+        
     })
 }
 
