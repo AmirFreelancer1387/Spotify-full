@@ -2,7 +2,7 @@ import TryCatch from "./TryCatch.js";
 import { User } from "./model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-const registerUser = TryCatch(async (req, res) => {
+export const registerUser = TryCatch(async (req, res) => {
     const { name, email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
@@ -25,5 +25,26 @@ const registerUser = TryCatch(async (req, res) => {
         }
     });
 });
-export default registerUser;
+export const loginUser = TryCatch(async (req, res) => {
+    const { name, email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' });
+        return;
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' });
+        return;
+    }
+    res.status(200).json({
+        message: 'با موفقیت وارد شدید',
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }
+    });
+});
 //# sourceMappingURL=controller.js.map
