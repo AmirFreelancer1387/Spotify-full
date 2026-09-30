@@ -49,14 +49,3 @@ const schema : Schema <Iuser> = new Schema({
 
 
 export const User = mongoose.model<Iuser>("User", schema);
-
-
-
-
-
-
-
-
-
-
-
