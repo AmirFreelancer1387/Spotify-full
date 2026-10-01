@@ -7,8 +7,6 @@ export interface Iuser extends Document{
     password:string;
     role:"user"|"admin";
     playlist:string[];
-
-
 }
 
 const schema : Schema <Iuser> = new Schema({
