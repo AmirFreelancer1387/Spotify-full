@@ -1,16 +1,13 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+import mongoose from "mongoose";
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGOOSE_URL, {
-            dbName: "spotifyDB",
+        await mongoose.connect(process.env.MONGODB_URL, {
+            dbName: "spotifyDb"
         });
-        console.log('DB is connected');
+        console.log('MONgoose DB connected ✔');
     }
     catch (error) {
         console.log(error);
-        throw error;
     }
 };
 export default connectDB;
