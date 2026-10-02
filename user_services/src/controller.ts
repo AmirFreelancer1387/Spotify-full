@@ -4,14 +4,14 @@ import { User } from "./model.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import type { AuthenticatedRequest } from "./middleware.js";
-
+//register
 export const registerUser = TryCatch(async (req, res) => {
-    const {name, email, password } = req.body
+    const { name, email, password } = req.body
 
     let user = await User.findOne({ email })
 
     if (user) {
-        res.status(400).json({ message: 'کاربری با این مشخصات قبلا ثبت نام کرده است'})
+        res.status(400).json({ message: 'کاربری با این مشخصات قبلا ثبت نام کرده است' })
         return
     }
 
@@ -26,7 +26,7 @@ export const registerUser = TryCatch(async (req, res) => {
 
     const JWT_SEC = process.env.JWT_SEC as string
 
-    const token = jwt.sign({_id: user._id}, JWT_SEC, {
+    const token = jwt.sign({ _id: user._id }, JWT_SEC, {
         expiresIn: '7d'
     })
 
@@ -44,38 +44,42 @@ export const registerUser = TryCatch(async (req, res) => {
         token
     })
 })
-
+//login
 export const loginUser = TryCatch(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email })
 
     if (!user) {
-        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' })
+        res.status(400).json({ message: 'کاربر یافت نشد.❌' })
         return
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
-        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' })
+        res.status(404).json({ message: 'اطلاعات صحیح نمیباشد.' })
         return
     }
 
-    res.status(200).json({
-        message: 'با موفقیت وارد شدید',
+    const JWT_SEC = process.env.JWT_SEC as string
+    const token = jwt.sign({ _id: user._id }, JWT_SEC, {
+        expiresIn: '10d'
+    })
+    res.status(201).json({
+        message: 'ثبت نام انجام شد.',
         user: {
             id: user._id,
             name: user.name,
             email: user.email,
             role: user.role
-        }
+        },
+        token
     })
-
-
 })
 
-export const myProfile = TryCatch(async (req:AuthenticatedRequest, res) => {
+//user profile
+export const myProfile = TryCatch(async (req: AuthenticatedRequest, res) => {
     const user = req.user
 
     res.json(user)
