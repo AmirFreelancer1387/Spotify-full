@@ -4,7 +4,7 @@ import { User } from "./model.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import type { AuthenticatedRequest } from "./middleware.js";
-
+//register
 export const registerUser = TryCatch(async (req, res) => {
     const {name, email, password } = req.body
 
@@ -44,37 +44,41 @@ export const registerUser = TryCatch(async (req, res) => {
         token
     })
 })
+//Login
+export const loginUser = Trycatch(async (req, res) => {
+      const { name, email, password } = req.body
 
-export const loginUser = TryCatch(async (req, res) => {
-    const { name, email, password } = req.body;
+      let user = await User.findOne({ email })
 
-    const user = await User.findOne({ email });
+      if (!user) {
+            res.status(400).json({ message: 'کاربر یافت نشد.❌' })
+            return
+      }
 
-    if (!user) {
-        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' })
-        return
-    }
+      const isMatch = await bcrypt.compare(password, user.password)
 
-    const isMatch = await bcrypt.compare(password, user.password)
+      if (!isMatch) {
+            res.status(404).json({ message: 'اطلاعات صحیح نمیباشد.' })
+            return
+      }
 
-    if (!isMatch) {
-        res.status(404).json({ message: 'اطلاعات ورود صحیح نمی باشد' })
-        return
-    }
-
-    res.status(200).json({
-        message: 'با موفقیت وارد شدید',
-        user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role
-        }
-    })
-
-
+      const JWT_SEC = process.env.JWT_SEC as string
+      const token = jwt.sign({ _id: user._id }, JWT_SEC, {
+            expiresIn: '10d'
+      })
+      res.status(201).json({
+            message: 'ثبت نام انجام شد.',
+            user: {
+                  id: user._id,
+                  name: user.name,
+                  email: user.email,
+                  role: user.role
+            },
+            token
+      })
 })
 
+//user profile
 export const myProfile = TryCatch(async (req:AuthenticatedRequest, res) => {
     const user = req.user
 
