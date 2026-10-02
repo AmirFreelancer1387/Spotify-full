@@ -15,6 +15,10 @@ export const registerUser = TryCatch(async (req, res) => {
         email,
         password: hashPassword
     });
+    const JWT_SEC = process.env.JWT_SEC;
+    const token = jwt.sign({ _id: createUser._id }, JWT_SEC, {
+        expiresIn: '7d'
+    });
     res.status(201).json({
         message: 'ثبت نام با موفقیت انجام شد',
         user: {
@@ -22,7 +26,8 @@ export const registerUser = TryCatch(async (req, res) => {
             name: createUser.name,
             email: createUser.email,
             role: createUser.role
-        }
+        },
+        token
     });
 });
 export const loginUser = TryCatch(async (req, res) => {
